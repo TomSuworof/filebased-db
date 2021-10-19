@@ -72,7 +72,7 @@
             </div>
             <div class="item-function-button">
               <div>
-                <button @click="executeFunctionForItem(newItem)">✔</button>
+                <button @click="functionForItem(newItem)">✔</button>
               </div>
               <div class="error-message">
                 {{ errorMessage }}
@@ -117,7 +117,7 @@ export default {
             this.showDeleteByQuery = true;
           })
           .catch(err => {
-            console.log(err);
+            console.log(err.response.data.error);
           });
     },
     deleteByQuery: function (searchQuery) {
@@ -130,7 +130,7 @@ export default {
             this.items = response.data;
           })
           .catch(err => {
-            console.log(err.message);
+            console.log(err.response.data.error);
           })
     },
     openItemEditor: function (itemIn, functionForItem) {
@@ -139,21 +139,13 @@ export default {
       this.functionForItem = functionForItem;
       this.oldItemId = itemIn.id;
     },
-    executeFunctionForItem: function (item) {
-      if (this.doesItemHaveEmptyField(item)) {
-        this.errorMessage = 'Item has empty field';
-      } else {
-        this.functionForItem(item); // call 'addItem' or 'editItem'
-      }
-    },
     addItem: function (item) {
       ItemService.addItem(item)
           .then(() => {
             this.$router.go(0); // refreshing page
           })
           .catch(err => {
-            console.log(err);
-            this.errorMessage = err.message;
+            this.errorMessage = err.response.data.error.replace('[', '').replace(']', '');
           });
     },
     editItem: function (item) {
@@ -163,15 +155,8 @@ export default {
             this.$router.go(0); // refreshing page
           })
           .catch(err => {
-            this.errorMessage = err.message;
+            this.errorMessage = err.response.data.error.replace('[', '').replace(']', '');
           });
-    },
-    doesItemHaveEmptyField: function (item) {
-      return item.id === undefined ||
-          item.name === undefined ||
-          item.amountAvailable === undefined ||
-          item.price === undefined ||
-          item.color === undefined;
     },
     deleteItem: function (item) {
       ItemService.deleteItem(item);

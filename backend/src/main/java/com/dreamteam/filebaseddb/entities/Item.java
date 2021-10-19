@@ -4,18 +4,31 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
 import java.lang.reflect.Field;
-import java.util.Arrays;
 
 @Getter
 @Setter
 @ToString
 public class Item {
+    @NotNull(message = "ID cannot be empty")
     private Long id;
+
+    @NotBlank(message = "Name cannot be empty")
     private String name;
+
+    @PositiveOrZero(message = "Amount cannot be negative")
     private Long amountAvailable;
+
+    @PositiveOrZero(message = "Price cannot be negative")
     private Integer price;
+
+    @NotBlank(message = "Item cannot be without color")
     private String color;
+
+    @NotNull(message = "Boolean cannot be empty")
     private Boolean refurbished;
 
     public Item(Long id, String name, Long amountAvailable, Integer price, String color, Boolean refurbished) {

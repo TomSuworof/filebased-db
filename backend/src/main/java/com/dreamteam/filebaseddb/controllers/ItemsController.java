@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Controller
@@ -23,13 +24,13 @@ public class ItemsController {
     }
 
     @PostMapping("/add")
-    public @ResponseBody void addItem(@RequestBody Item item, @RequestParam String databaseName) {
+    public @ResponseBody void addItem(@Valid @RequestBody Item item, @RequestParam String databaseName) {
         System.setProperty("databaseName", databaseName);
         itemService.addItem(item);
     }
 
     @PutMapping("/edit")
-    public @ResponseBody void editItem(@RequestBody Item item, @RequestParam String databaseName, @RequestParam Long oldItemId) {
+    public @ResponseBody void editItem(@Valid @RequestBody Item item, @RequestParam String databaseName, @RequestParam Long oldItemId) {
         System.setProperty("databaseName", databaseName);
         itemService.editItem(oldItemId, item);
     }
