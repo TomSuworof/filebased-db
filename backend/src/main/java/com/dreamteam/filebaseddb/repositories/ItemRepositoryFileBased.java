@@ -31,11 +31,11 @@ public class ItemRepositoryFileBased implements ItemRepository {
 
         List<Item> items = new LinkedList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(database))) {
-            String row;
-            while ((row = reader.readLine()) != null) {
-                String[] data = row.split(",");
-                items.add(Item.fromCSVRow(data));
-            }
+            reader.lines()
+                    .forEach(line -> {
+                        String[] data = line.split(",");
+                        items.add(Item.deserialize(data));
+                    });
         } catch (IOException e) {
             e.printStackTrace();
             throw new IllegalItemFormatException(e.getMessage(), e);
@@ -48,7 +48,7 @@ public class ItemRepositoryFileBased implements ItemRepository {
         File database = new File(databaseName.formatted(System.getProperty("databaseName")));
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(database, true))) {
-            String row = String.join(",", item.toCSVRow());
+            String row = String.join(",", item.serialize());
             writer.write(row);
             writer.newLine();
         } catch (IOException e) {
@@ -56,64 +56,42 @@ public class ItemRepositoryFileBased implements ItemRepository {
         }
     }
 
-    public void deleteById(Long id) {
-        File database = new File(databaseName.formatted(System.getProperty("databaseName")));
-        File cache = new File(cacheName);
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(database));
-             BufferedWriter writer = new BufferedWriter(new FileWriter(cache))) {
-            String row;
-            while ((row = reader.readLine()) != null) {
-                String[] data = row.split(",");
-                Item item = Item.fromCSVRow(data);
-
-                if (!item.getId().equals(id)) {
-                    writer.write(row);
-                    writer.newLine();
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new IllegalItemFormatException(e.getMessage(), e);
-        }
-        writeCacheToDatabase(database, cache);
-    }
 
     public Optional<Item> findItemById(Long id) {
         File database = new File(databaseName.formatted(System.getProperty("databaseName")));
 
         try (BufferedReader reader = new BufferedReader(new FileReader(database))) {
-            String row;
-            while ((row = reader.readLine()) != null) {
-                String[] data = row.split(",");
-                Item item = Item.fromCSVRow(data);
+            Optional<String> dataForItem = reader.lines()
+                    .filter(line -> {
+                        String[] data = line.split(",");
+                        Item item = Item.deserialize(data);
 
-                if (item.getId().equals(id)) {
-                    return Optional.of(item);
-                }
-            }
+                        return item.getId().equals(id);
+                    })
+                    .findFirst();
+
+            return dataForItem.map(data -> Item.deserialize(data.split(",")));
         } catch (IOException e) {
             e.printStackTrace();
             throw new IllegalItemFormatException(e.getMessage(), e);
         }
-
-        return Optional.empty();
     }
+
 
     public List<Item> findAllItemsById(Long id) {
         File database = new File(databaseName.formatted(System.getProperty("databaseName")));
 
         List<Item> items = new LinkedList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(database))) {
-            String row;
-            while ((row = reader.readLine()) != null) {
-                String[] data = row.split(",");
-                Item item = Item.fromCSVRow(data);
+            reader.lines()
+                    .forEach(line -> {
+                        String[] data = line.split(",");
+                        Item item = Item.deserialize(data);
 
-                if (item.getId().equals(id)) {
-                    items.add(item);
-                }
-            }
+                        if (item.getId().equals(id)) {
+                            items.add(item);
+                        }
+                    });
         } catch (IOException e) {
             e.printStackTrace();
             throw new IllegalItemFormatException(e.getMessage(), e);
@@ -127,15 +105,15 @@ public class ItemRepositoryFileBased implements ItemRepository {
 
         List<Item> items = new LinkedList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(database))) {
-            String row;
-            while ((row = reader.readLine()) != null) {
-                String[] data = row.split(",");
-                Item item = Item.fromCSVRow(data);
+            reader.lines()
+                    .forEach(line -> {
+                        String[] data = line.split(",");
+                        Item item = Item.deserialize(data);
 
-                if (item.getName().equalsIgnoreCase(name)) {
-                    items.add(item);
-                }
-            }
+                        if (item.getName().equalsIgnoreCase(name)) {
+                            items.add(item);
+                        }
+                    });
         } catch (IOException e) {
             e.printStackTrace();
             throw new IllegalItemFormatException(e.getMessage(), e);
@@ -149,15 +127,15 @@ public class ItemRepositoryFileBased implements ItemRepository {
 
         List<Item> items = new LinkedList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(database))) {
-            String row;
-            while ((row = reader.readLine()) != null) {
-                String[] data = row.split(",");
-                Item item = Item.fromCSVRow(data);
+            reader.lines()
+                    .forEach(line -> {
+                        String[] data = line.split(",");
+                        Item item = Item.deserialize(data);
 
-                if (item.getAmountAvailable().equals(amountAvailable)) {
-                    items.add(item);
-                }
-            }
+                        if (item.getAmountAvailable().equals(amountAvailable)) {
+                            items.add(item);
+                        }
+                    });
         } catch (IOException e) {
             e.printStackTrace();
             throw new IllegalItemFormatException(e.getMessage(), e);
@@ -171,15 +149,15 @@ public class ItemRepositoryFileBased implements ItemRepository {
 
         List<Item> items = new LinkedList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(database))) {
-            String row;
-            while ((row = reader.readLine()) != null) {
-                String[] data = row.split(",");
-                Item item = Item.fromCSVRow(data);
+            reader.lines()
+                    .forEach(line -> {
+                        String[] data = line.split(",");
+                        Item item = Item.deserialize(data);
 
-                if (item.getPrice().equals(price)) {
-                    items.add(item);
-                }
-            }
+                        if (item.getPrice().equals(price)) {
+                            items.add(item);
+                        }
+                    });
         } catch (IOException e) {
             e.printStackTrace();
             throw new IllegalItemFormatException(e.getMessage(), e);
@@ -193,15 +171,15 @@ public class ItemRepositoryFileBased implements ItemRepository {
 
         List<Item> items = new LinkedList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(database))) {
-            String row;
-            while ((row = reader.readLine()) != null) {
-                String[] data = row.split(",");
-                Item item = Item.fromCSVRow(data);
+            reader.lines()
+                    .forEach(line -> {
+                        String[] data = line.split(",");
+                        Item item = Item.deserialize(data);
 
-                if (item.getColor().equalsIgnoreCase(color)) {
-                    items.add(item);
-                }
-            }
+                        if (item.getColor().equalsIgnoreCase(color)) {
+                            items.add(item);
+                        }
+                    });
         } catch (IOException e) {
             e.printStackTrace();
             throw new IllegalItemFormatException(e.getMessage(), e);
@@ -215,21 +193,45 @@ public class ItemRepositoryFileBased implements ItemRepository {
 
         List<Item> items = new LinkedList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(database))) {
-            String row;
-            while ((row = reader.readLine()) != null) {
-                String[] data = row.split(",");
-                Item item = Item.fromCSVRow(data);
+            reader.lines()
+                    .forEach(line -> {
+                        String[] data = line.split(",");
+                        Item item = Item.deserialize(data);
 
-                if (item.getRefurbished().equals(refurbished)) {
-                    items.add(item);
-                }
-            }
+                        if (item.getRefurbished().equals(refurbished)) {
+                            items.add(item);
+                        }
+                    });
         } catch (IOException e) {
             e.printStackTrace();
             throw new IllegalItemFormatException(e.getMessage(), e);
         }
 
         return items;
+    }
+
+
+    public void deleteById(Long id) {
+        File database = new File(databaseName.formatted(System.getProperty("databaseName")));
+        File cache = new File(cacheName);
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(database));
+             BufferedWriter writer = new BufferedWriter(new FileWriter(cache))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] data = line.split(",");
+                Item item = Item.deserialize(data);
+
+                if (!item.getId().equals(id)) {
+                    writer.write(line);
+                    writer.newLine();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new IllegalItemFormatException(e.getMessage(), e);
+        }
+        writeCacheToDatabase(database, cache);
     }
 
     public void deleteAllItemsByName(String name) {
@@ -241,7 +243,7 @@ public class ItemRepositoryFileBased implements ItemRepository {
             String row;
             while ((row = reader.readLine()) != null) {
                 String[] data = row.split(",");
-                Item item = Item.fromCSVRow(data);
+                Item item = Item.deserialize(data);
 
                 if (!item.getName().equalsIgnoreCase(name)) {
                     writer.write(row);
@@ -264,7 +266,7 @@ public class ItemRepositoryFileBased implements ItemRepository {
             String row;
             while ((row = reader.readLine()) != null) {
                 String[] data = row.split(",");
-                Item item = Item.fromCSVRow(data);
+                Item item = Item.deserialize(data);
 
                 if (!item.getAmountAvailable().equals(amountAvailable)) {
                     writer.write(row);
@@ -287,7 +289,7 @@ public class ItemRepositoryFileBased implements ItemRepository {
             String row;
             while ((row = reader.readLine()) != null) {
                 String[] data = row.split(",");
-                Item item = Item.fromCSVRow(data);
+                Item item = Item.deserialize(data);
 
                 if (!item.getPrice().equals(price)) {
                     writer.write(row);
@@ -310,7 +312,7 @@ public class ItemRepositoryFileBased implements ItemRepository {
             String row;
             while ((row = reader.readLine()) != null) {
                 String[] data = row.split(",");
-                Item item = Item.fromCSVRow(data);
+                Item item = Item.deserialize(data);
 
                 if (!item.getColor().equalsIgnoreCase(color)) {
                     writer.write(row);
@@ -333,7 +335,7 @@ public class ItemRepositoryFileBased implements ItemRepository {
             String row;
             while ((row = reader.readLine()) != null) {
                 String[] data = row.split(",");
-                Item item = Item.fromCSVRow(data);
+                Item item = Item.deserialize(data);
 
                 if (!item.getRefurbished().equals(refurbished)) {
                     writer.write(row);

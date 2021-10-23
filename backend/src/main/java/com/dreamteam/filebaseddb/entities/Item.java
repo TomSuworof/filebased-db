@@ -48,7 +48,7 @@ public class Item {
         return false;
     }
 
-    public static Item fromCSVRow(String[] data) {
+    public static Item deserialize(String[] data) {
         return new Item(
                 Long.parseLong(data[0]),
                 data[1],
@@ -58,7 +58,7 @@ public class Item {
                 Boolean.parseBoolean(data[5]));
     }
 
-    public String[] toCSVRow() {
+    public String[] serialize() {
         return new String[] {
                 this.getId().toString(),
                 this.getName(),
