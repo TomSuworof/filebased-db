@@ -40,14 +40,6 @@ public class Item {
         this.refurbished = refurbished == null ? Boolean.FALSE : refurbished;
     }
 
-    public boolean containsEmpty() throws IllegalAccessException {
-        for (Field f : getClass().getDeclaredFields())
-            if (f.get(this) == null) {
-                return true;
-            }
-        return false;
-    }
-
     public static Item deserialize(String[] data) {
         return new Item(
                 Long.parseLong(data[0]),

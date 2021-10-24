@@ -77,7 +77,7 @@
               <div>
                 <button @click="functionForItem(newItem)">✔</button>
               </div>
-              <div class="error-message">
+              <div class="error-message" v-show="errorMessage !== undefined">
                 {{ errorMessage }}
               </div>
             </div>
@@ -224,5 +224,17 @@ button {
 .form-check, .item-function-button {
   margin: 0 5pt 0;
   display: inline-block;
+}
+
+.error-message {
+  position: absolute;
+  border-radius: 10px;
+  background: rgba(255, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  min-width: 160px;
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+  margin: 0 10pt 0 0;
+  padding: 12px 16px;
+  z-index: 1;
 }
 </style>

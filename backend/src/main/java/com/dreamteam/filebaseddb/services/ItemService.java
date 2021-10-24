@@ -25,13 +25,6 @@ public class ItemService {
         if (itemOpt.isPresent()) {
             throw new DuplicatedItemException();
         } else {
-            try {
-                if (item.containsEmpty()) {
-                    throw new IllegalItemFormatException();
-                }
-            } catch (IllegalAccessException e) {
-                throw new IllegalItemFormatException(e.getMessage(), e);
-            }
             itemRepository.save(item);
         }
     }
