@@ -35,4 +35,6 @@ public interface ItemRepository {
     void deleteAllItemsByColor(String color);
 
     void deleteAllItemsByRefurbished(Boolean refurbished);
+
+    void deleteAllItems();
 }

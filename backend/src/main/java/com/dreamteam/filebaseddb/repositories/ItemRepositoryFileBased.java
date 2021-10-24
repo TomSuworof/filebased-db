@@ -348,4 +348,17 @@ public class ItemRepositoryFileBased implements ItemRepository {
         }
         writeCacheToDatabase(database, cache);
     }
+
+
+    public void deleteAllItems() {
+        File database = new File(databaseName.formatted(System.getProperty("databaseName")));
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(database))) {
+            // just opening for writing: it clears file
+            writer.write("");
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new IllegalItemFormatException(e.getMessage(), e);
+        }
+    }
 }

@@ -11,9 +11,6 @@ const store = new Vuex.Store({
             commit('addDatabase', database);
             localStorage.setItem('currentDatabase', database);
         },
-        // removeDatabase({ commit }, databasesInfo) {
-        //     commit('removeDatabase', databasesInfo);
-        // },
         switchToDatabase({ commit }, databasesInfo) {
             commit('switchToDatabase', databasesInfo);
             localStorage.setItem('currentDatabase', databasesInfo.database);
@@ -23,9 +20,6 @@ const store = new Vuex.Store({
         addDatabase(state, database) {
             state.currentDatabase = database;
         },
-        // removeDatabase(state, remainedDatabases) {
-        //     state.currentDatabase = remainedDatabases[0];
-        // },
         switchToDatabase(state, databasesInfo) {
             if (databasesInfo.database in databasesInfo.allDatabases) {
                 state.currentDatabase = databasesInfo.database;

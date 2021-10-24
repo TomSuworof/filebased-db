@@ -86,4 +86,8 @@ public class ItemService {
             default -> throw new IllegalItemFormatException();
         }
     }
+
+    public void deleteAllItems() {
+        itemRepository.deleteAllItems();
+    }
 }

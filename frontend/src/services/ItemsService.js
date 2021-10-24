@@ -25,6 +25,10 @@ class ItemsService {
     deleteItems(searchQuery) {
         return http.delete('items/deleteItems', { params: { searchQuery, 'databaseName': getDatabaseName() } });
     }
+
+    clear() {
+        return http.delete('items/clear', { params: { 'databaseName': getDatabaseName() } });
+    }
 }
 
 export default new ItemsService();

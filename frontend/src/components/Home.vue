@@ -1,8 +1,11 @@
 <template>
   <div>
     <div class="header">
-      <div>
+      <div class="database-title">
         <h1>{{ currentDatabase }}.csv</h1>
+      </div>
+      <div class="clear-button">
+        <button @click="clear" title="Clear table">❌</button>
       </div>
     </div>
     <div class="search-bar">
@@ -161,6 +164,10 @@ export default {
     deleteItem: function (item) {
       ItemService.deleteItem(item);
       this.$router.go(0);
+    },
+    clear: function () {
+      ItemService.clear();
+      this.$router.go(0);
     }
   },
   created() {
@@ -173,6 +180,15 @@ export default {
 button {
   border: none;
   background: white;
+}
+
+.clear-button {
+  display: none;
+}
+
+.header:hover .clear-button, .database-title {
+  display: inline-block;
+  margin: 0 10pt 0 0;
 }
 
 .search-bar {
