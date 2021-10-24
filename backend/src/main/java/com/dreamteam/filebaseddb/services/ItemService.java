@@ -21,8 +21,8 @@ public class ItemService {
     }
 
     public void addItem(Item item) {
-        Optional<Item> itemOpt = itemRepository.findItemById(item.getId());
-        if (itemOpt.isPresent()) {
+        Optional<Item> duplicatedItem = itemRepository.findItemById(item.getId());
+        if (duplicatedItem.isPresent()) {
             throw new DuplicatedItemException();
         } else {
             itemRepository.save(item);
@@ -31,12 +31,7 @@ public class ItemService {
 
     public void editItem(Long oldItemId, Item item) {
         deleteItem(oldItemId);
-        Optional<Item> duplicatedItem = itemRepository.findItemById(item.getId());
-        if (duplicatedItem.isPresent()) {
-            throw new DuplicatedItemException();
-        } else {
-            addItem(item);
-        }
+        addItem(item);
     }
 
     public void deleteItem(Long id) {
