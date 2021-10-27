@@ -83,13 +83,15 @@ public class ItemRepositoryFileBased implements ItemRepository {
         } catch (IOException e) {
             throw new IllegalItemFormatException(e.getMessage(), e);
         }
+
+        File databaseIdIndexFile = new File(databaseIdIndex.formatted(System.getProperty("databaseName")));
+        buildIndex(database, databaseIdIndexFile); // rebuild index
     }
 
 
     public Optional<Item> findItemById(Long id) {
         File database = new File(databaseName.formatted(System.getProperty("databaseName")));
         File databaseIdIndexFile = new File(databaseIdIndex.formatted(System.getProperty("databaseName")));
-        buildIndex(database, databaseIdIndexFile); // rebuild index
 
         return findItemById(id, database, databaseIdIndexFile);
     }
@@ -258,6 +260,9 @@ public class ItemRepositoryFileBased implements ItemRepository {
             throw new IllegalItemFormatException(e.getMessage(), e);
         }
         writeCacheToDatabase(database, cache);
+
+        File databaseIdIndexFile = new File(databaseIdIndex.formatted(System.getProperty("databaseName")));
+        buildIndex(database, databaseIdIndexFile); // rebuild index
     }
 
     public void deleteAllItemsByName(String name) {
