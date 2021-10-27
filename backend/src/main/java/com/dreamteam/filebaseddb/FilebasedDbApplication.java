@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class FilebasedDbApplication {
 
     public static void main(String[] args) {
-        System.setProperty("databaseEnv", "database"); // default database
+        System.setProperty("databaseName", "database"); // default database
         SpringApplication.run(FilebasedDbApplication.class, args);
     }
 

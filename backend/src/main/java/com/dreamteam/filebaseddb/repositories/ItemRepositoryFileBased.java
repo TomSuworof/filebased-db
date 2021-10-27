@@ -286,6 +286,9 @@ public class ItemRepositoryFileBased implements ItemRepository {
             throw new IllegalItemFormatException(e.getMessage(), e);
         }
         writeCacheToDatabase(database, cache);
+
+        File databaseIdIndexFile = new File(databaseIdIndex.formatted(System.getProperty("databaseName")));
+        buildIndex(database, databaseIdIndexFile); // rebuild index
     }
 
     public void deleteAllItemsByAmountAvailable(Long amountAvailable) {
@@ -309,6 +312,9 @@ public class ItemRepositoryFileBased implements ItemRepository {
             throw new IllegalItemFormatException(e.getMessage(), e);
         }
         writeCacheToDatabase(database, cache);
+
+        File databaseIdIndexFile = new File(databaseIdIndex.formatted(System.getProperty("databaseName")));
+        buildIndex(database, databaseIdIndexFile); // rebuild index
     }
 
     public void deleteAllItemsByPrice(Integer price) {
@@ -332,6 +338,9 @@ public class ItemRepositoryFileBased implements ItemRepository {
             throw new IllegalItemFormatException(e.getMessage(), e);
         }
         writeCacheToDatabase(database, cache);
+
+        File databaseIdIndexFile = new File(databaseIdIndex.formatted(System.getProperty("databaseName")));
+        buildIndex(database, databaseIdIndexFile); // rebuild index
     }
 
     public void deleteAllItemsByColor(String color) {
@@ -355,6 +364,9 @@ public class ItemRepositoryFileBased implements ItemRepository {
             throw new IllegalItemFormatException(e.getMessage(), e);
         }
         writeCacheToDatabase(database, cache);
+
+        File databaseIdIndexFile = new File(databaseIdIndex.formatted(System.getProperty("databaseName")));
+        buildIndex(database, databaseIdIndexFile); // rebuild index
     }
 
     public void deleteAllItemsByRefurbished(Boolean refurbished) {
@@ -378,6 +390,9 @@ public class ItemRepositoryFileBased implements ItemRepository {
             throw new IllegalItemFormatException(e.getMessage(), e);
         }
         writeCacheToDatabase(database, cache);
+
+        File databaseIdIndexFile = new File(databaseIdIndex.formatted(System.getProperty("databaseName")));
+        buildIndex(database, databaseIdIndexFile); // rebuild index
     }
 
 
@@ -391,5 +406,8 @@ public class ItemRepositoryFileBased implements ItemRepository {
             e.printStackTrace();
             throw new IllegalItemFormatException(e.getMessage(), e);
         }
+
+        File databaseIdIndexFile = new File(databaseIdIndex.formatted(System.getProperty("databaseName")));
+        buildIndex(database, databaseIdIndexFile); // rebuild index
     }
 }
