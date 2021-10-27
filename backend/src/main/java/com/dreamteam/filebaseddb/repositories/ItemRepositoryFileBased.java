@@ -6,11 +6,14 @@ import org.springframework.stereotype.Repository;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 public class ItemRepositoryFileBased implements ItemRepository {
     private static final String databaseName = "D:\\Programs\\IntelliJIDEA\\filebased-db\\backend\\src\\main\\resources\\db\\%s.csv";
     private static final String cacheName = "D:\\Programs\\IntelliJIDEA\\filebased-db\\backend\\src\\main\\resources\\db\\temp.csv";
+
+    private static final String databaseIdIndex = "D:\\Programs\\IntelliJIDEA\\filebased-db\\backend\\src\\main\\resources\\db\\%s_id.index";
 
     private void writeCacheToDatabase(File database, File cache) {
         try {
@@ -26,8 +29,34 @@ public class ItemRepositoryFileBased implements ItemRepository {
         }
     }
 
+    private void buildIndex(File database, File databaseIdIndexFile) {
+        try (BufferedReader databaseReader = new BufferedReader(new FileReader(database));
+             ObjectOutputStream indexWriter = new ObjectOutputStream(new FileOutputStream(databaseIdIndexFile))) {
+
+            AtomicLong currentLine = new AtomicLong();
+            Map<Long, Long> index = new TreeMap<>(); // uses tree inside for storing data
+
+            databaseReader.lines()
+                    .forEach(line -> {
+                        String[] data = line.split(",");
+                        Item item = Item.deserialize(data);
+
+                        index.put(item.getId(), currentLine.getAndIncrement());
+                    });
+
+            indexWriter.writeObject(index);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new IllegalItemFormatException(e.getMessage(), e);
+        }
+    }
+
+
     public List<Item> findAll() {
         File database = new File(databaseName.formatted(System.getProperty("databaseName")));
+        File databaseIdIndexFile = new File(databaseIdIndex.formatted(System.getProperty("databaseName")));
+        buildIndex(database, databaseIdIndexFile); // rebuild index whenever all items requested
 
         List<Item> items = new LinkedList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(database))) {
@@ -59,19 +88,34 @@ public class ItemRepositoryFileBased implements ItemRepository {
 
     public Optional<Item> findItemById(Long id) {
         File database = new File(databaseName.formatted(System.getProperty("databaseName")));
+        File databaseIdIndexFile = new File(databaseIdIndex.formatted(System.getProperty("databaseName")));
+        buildIndex(database, databaseIdIndexFile); // rebuild index
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(database))) {
-            Optional<String> dataForItem = reader.lines()
-                    .filter(line -> {
-                        String[] data = line.split(",");
-                        Item item = Item.deserialize(data);
+        return findItemById(id, database, databaseIdIndexFile);
+    }
 
-                        return item.getId().equals(id);
-                    })
-                    .findFirst();
+    private Optional<Item> findItemById(Long id, File database, File databaseIndexFile) {
+        try (BufferedReader databaseReader = new BufferedReader(new FileReader(database));
+             ObjectInputStream indexReader = new ObjectInputStream(new FileInputStream(databaseIndexFile))) {
 
-            return dataForItem.map(data -> Item.deserialize(data.split(",")));
-        } catch (IOException e) {
+            Map<Long, Long> index = (TreeMap<Long, Long>) indexReader.readObject();
+
+            if (index.containsKey(id)) {
+                long lineOfItem = index.get(id);
+
+                Optional<String> dataOpt = databaseReader.lines().skip(lineOfItem).findFirst();
+
+                if (dataOpt.isPresent()) {
+                    String[] data = dataOpt.get().split(",");
+                    return Optional.of(Item.deserialize(data));
+                } else {
+                    return Optional.empty();
+                }
+            } else {
+                return Optional.empty();
+            }
+
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             throw new IllegalItemFormatException(e.getMessage(), e);
         }
@@ -79,25 +123,7 @@ public class ItemRepositoryFileBased implements ItemRepository {
 
 
     public List<Item> findAllItemsById(Long id) {
-        File database = new File(databaseName.formatted(System.getProperty("databaseName")));
-
-        List<Item> items = new LinkedList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(database))) {
-            reader.lines()
-                    .forEach(line -> {
-                        String[] data = line.split(",");
-                        Item item = Item.deserialize(data);
-
-                        if (item.getId().equals(id)) {
-                            items.add(item);
-                        }
-                    });
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new IllegalItemFormatException(e.getMessage(), e);
-        }
-
-        return items;
+        return findItemById(id).map(List::of).orElseGet(List::of);
     }
 
     public List<Item> findAllItemsByName(String name) {

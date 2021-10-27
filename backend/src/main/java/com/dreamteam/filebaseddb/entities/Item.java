@@ -7,7 +7,6 @@ import lombok.ToString;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
-import java.lang.reflect.Field;
 
 @Getter
 @Setter

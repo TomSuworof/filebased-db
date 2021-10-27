@@ -17,8 +17,9 @@ public class DatabasesService {
         try {
             return Files.walk(Path.of(storage))
                     .filter(Files::isRegularFile) // only files
-                    .map(Path::getFileName) // short filenames
+                    .map(Path::getFileName)// short filenames
                     .map(Path::toString) // filename -> string
+                    .filter(filename -> !filename.endsWith(".index")) // not indexes
                     .map(FileNameUtils::getBaseName) // reducing extension
                     .collect(Collectors.toList());
         } catch (IOException e) {
