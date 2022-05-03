@@ -3,6 +3,7 @@ package com.dreamteam.filebaseddb.services;
 import com.dreamteam.filebaseddb.entities.Item;
 import com.dreamteam.filebaseddb.exceptions.DuplicatedItemException;
 import com.dreamteam.filebaseddb.exceptions.IllegalItemFormatException;
+import com.dreamteam.filebaseddb.exceptions.ItemNotFoundException;
 import com.dreamteam.filebaseddb.repositories.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,7 +35,12 @@ public class ItemService {
     }
 
     public void deleteItem(Long id) {
-        itemRepository.deleteById(id);
+        Optional<Item> itemOpt = itemRepository.findItemById(id);
+        if (itemOpt.isEmpty()) {
+            throw new ItemNotFoundException();
+        } else {
+            itemRepository.deleteById(id);
+        }
     }
 
     public List<Item> searchItems(String searchQuery) {
